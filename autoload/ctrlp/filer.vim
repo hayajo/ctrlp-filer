@@ -50,7 +50,11 @@ function! ctrlp#filer#init(...)
     silent! exe "lcd" s:path
   endif
   call ctrlp#init(ctrlp#filer#id())
-  return map([".."] + split(glob(s:path . "/*"), "\n"), 'fnamemodify(v:val, ":t") . (isdirectory(v:val) ? "/" : "")')
+  let paths = [".."] + split(glob(s:path . "/*"), "\n")
+  if !get(g:, 'ctrlp_filer_hide_dotfiles', 0)
+      let paths = paths + split(glob(s:path . "/.[^.]*"), "\n")
+  endif
+  return map(paths, 'fnamemodify(v:val, ":t") . (isdirectory(v:val) ? "/" : "")')
 endfunction
 
 function! ctrlp#filer#accept(mode, str)
